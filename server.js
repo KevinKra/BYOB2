@@ -33,6 +33,30 @@ app.get("/api/v1/cities/:id", (req, res) => {
     });
 });
 
+app.post("/api/v1/cities", (req, res) => {
+  const { error } = validateCitySchema(req.body);
+  const { city, state } = req.body;
+  if (error) return res.status(400).send(error.details[0].message);
+  db("cities")
+    .insert(req.body)
+    .then(() => res.status(201).send(`${city}, ${state}, has been saved!`))
+    .catch(err => res.status(500).send(err));
+});
+
+app.delete("/api/v1/cities/:city", (req, res) => {
+  const city = req.params.city;
+  db("cities")
+    .where({ city })
+    // .then(matchingCity => {
+    //   if (!matchingCity.length)
+    //     return res.status(404).send("That city is not in the records.");
+    //   matchingCity.del();
+    // })
+    .del()
+    .then(() => res.status(200).send(`${city} has been deleted.`))
+    .catch(err => res.status(500).send(err));
+});
+
 app.get("/api/v1/teams", (req, res) => {
   db("teams")
     .select("*")
@@ -67,7 +91,7 @@ app.post("/api/v1/teams", (req, res) => {
   db("teams")
     .insert(req.body)
     .then(() =>
-      res.status(200).send(`team has been added to database... ${req.body}`)
+      res.status(201).send(`team has been added to database... ${req.body}`)
     )
     .catch(err => res.status(500).send(err));
 });
@@ -84,4 +108,13 @@ function validateTeamSchema(team) {
     coach: Joi.string().required()
   };
   return Joi.validate(team, schema);
+}
+
+function validateCitySchema(city) {
+  const schema = {
+    city: Joi.string().required(),
+    state: Joi.string().required(),
+    population: Joi.number().required()
+  };
+  return Joi.validate(city, schema);
 }
