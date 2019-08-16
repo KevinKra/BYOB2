@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const db = require("./connection");
+const Joi = require("@hapi/joi");
 
 // app.use(morgan(process.env.NODE_ENV !== "production" ? "dev" : "combined"));
 app.use(express.json());
@@ -60,5 +61,27 @@ app.get("/api/v1/teams/:id", (req, res) => {
     });
 });
 
+app.post("/api/v1/teams", (req, res) => {
+  const { error } = validateTeamSchema(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  db("teams")
+    .insert(req.body)
+    .then(() =>
+      res.status(200).send(`team has been added to database... ${req.body}`)
+    )
+    .catch(err => res.status(500).send(err));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, console.log(`Connected to port ${PORT}...`));
+
+function validateTeamSchema(team) {
+  const schema = {
+    name: Joi.string().required(),
+    sport: Joi.string().required(),
+    city: Joi.string().required(),
+    state: Joi.string().required(),
+    coach: Joi.string().required()
+  };
+  return Joi.validate(team, schema);
+}
