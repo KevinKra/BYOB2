@@ -2,8 +2,9 @@ const express = require("express");
 const app = express();
 const db = require("./connection");
 const Joi = require("@hapi/joi");
+const morgan = require("morgan");
 
-// app.use(morgan(process.env.NODE_ENV !== "production" ? "dev" : "combined"));
+app.use(morgan(process.env.NODE_ENV !== "production" ? "dev" : "combined"));
 app.use(express.json());
 
 app.get("/api/v1/cities", (req, res) => {
@@ -36,7 +37,7 @@ app.get("/api/v1/cities/:id", (req, res) => {
 app.post("/api/v1/cities", (req, res) => {
   const { error } = validateCitySchema(req.body);
   const { city, state } = req.body;
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(422).send(error.details[0].message);
   db("cities")
     .insert(req.body)
     .then(() => res.status(201).send(`${city}, ${state}, has been saved!`))
@@ -87,7 +88,7 @@ app.get("/api/v1/teams/:id", (req, res) => {
 
 app.post("/api/v1/teams", (req, res) => {
   const { error } = validateTeamSchema(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(422).send(error.details[0].message);
   db("teams")
     .insert(req.body)
     .then(() =>
