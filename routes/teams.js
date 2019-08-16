@@ -32,13 +32,26 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
+  console.log(req.body);
   const { error } = validateTeamSchema(req.body);
   if (error) return res.status(422).send(error.details[0].message);
   db("teams")
     .insert(req.body)
     .then(() =>
-      res.status(201).send(`team has been added to database... ${req.body}`)
+      res
+        .status(201)
+        .send(`team has been added to database... ${req.body.name}`)
     )
+    .catch(err => res.status(500).send(err));
+});
+
+router.delete("/:team", (req, res) => {
+  const teamName = req.params.team;
+  console.log(teamName);
+  db("teams")
+    .where({ name: teamName })
+    .del()
+    .then(() => res.status(200).send(`${teamName} has been deleted.`))
     .catch(err => res.status(500).send(err));
 });
 
