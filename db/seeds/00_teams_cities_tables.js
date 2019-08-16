@@ -10,26 +10,6 @@ const createCities = (knex, city) => {
     },
     "id"
   );
-  // .then(cityId => {
-  //   const teamsPromises = [];
-
-  //   teamsData.forEach(team => {
-  //     // console.log(team);
-  //     teamsPromises.push(
-  //       createTeams(knex, {
-  //         name: team.name,
-  //         sport: team.sport,
-  //         city: team.city,
-  //         state: team.state,
-  //         coach: team.coach
-  //         // city_id: cityId[0]
-  //       })
-  //     );
-  //   });
-  //   // console.log(teamsPromises);
-  //   return Promise.all(teamsPromises);
-  // })
-  // .catch(err => `Error seeding data ... ${err}`)
 };
 
 const createTeams = (knex, team) => {
@@ -39,7 +19,6 @@ const createTeams = (knex, team) => {
     city: team.city,
     state: team.state,
     coach: team.coach
-    // city_id: cityId[0]
   });
 };
 
