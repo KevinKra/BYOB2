@@ -44,11 +44,6 @@ router.delete("/:city", (req, res) => {
   const city = req.params.city;
   db("cities")
     .where({ city })
-    // .then(matchingCity => {
-    //   if (!matchingCity.length)
-    //     return res.status(404).send("That city is not in the records.");
-    //   matchingCity.del();
-    // })
     .del()
     .then(() => res.status(200).send(`${city} has been deleted.`))
     .catch(err => res.status(500).send(err));
